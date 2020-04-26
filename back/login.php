@@ -1,7 +1,8 @@
 <?php
+//login.php, Matthew Stepnowski
 include "db.php";
 
-function NTLMHash($Input)
+function NTLMHash($Input)  //Hash Function written by Feiyang Wang
 {
 // Convert the password from UTF8 to UTF16 (little endian)
 $Input = iconv('UTF-8', 'UTF-16LE', $Input);
@@ -21,17 +22,14 @@ return ($NTLMHash);
 }
 
 $username = $_POST['username'];
-
 $password = NTLMHash($_POST['password']);
 
 $result = mysqli_query($connection, "SELECT * FROM CS490_users WHERE username = '$username' AND password = '$password' ");
 
-if (mysqli_num_rows($result) == 0) 
-{
+if (mysqli_num_rows($result) == 0){
   $json = array("output" => "0", "role" => "false");
 } 
-else 
-{
+else{
   $row = mysqli_fetch_assoc($result);
   $json = array("output" => "1", "role" => $row["status"]);
 }

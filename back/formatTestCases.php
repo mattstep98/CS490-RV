@@ -1,3 +1,5 @@
+//formatTestCases.php, Matthew Stepnowski ...This was a testing file for working out a way for the front to send easy and readable test cases, not in use, found a better way.
+
 $TESTCASE1IN = array();
 $TESTCASE2IN = array();
 $TESTCASE3IN = array();

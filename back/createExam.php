@@ -1,4 +1,5 @@
 <?php
+//createExam.php, Matthew Stepnowski
 include "db.php";
 $examName = $_POST["examName"];
 $examQuestionsAndPoints = $_POST["examQuestionsAndPoints"];  // Array should looks like [{questionID : 1, points : 25}, {questionID : 2, points : 25}, {questionID : 3, points : 50}];
@@ -15,7 +16,7 @@ if (mysqli_num_rows($result) > 0)
 } 
 $counter++;
 echo $counter;
-
+//inserting questions for the exam into the exam table
 foreach($arr as $item) 
 { 
   $questionID = $item["questionID"];
@@ -27,9 +28,6 @@ foreach($arr as $item)
   }
 }
 echo "Created New Exam Successfully";
-
-
-
 
 mysqli_close($connection);
 ?>

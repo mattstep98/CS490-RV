@@ -1,4 +1,5 @@
 <?php
+//autoGrade.php, Matthew Stepnowski
 $examID = $_POST["examID"];
 $questionID = $_POST["questionID"];
 $questionDescription = $_POST["questionDescription"];
@@ -9,7 +10,6 @@ $testCasesOutputs = $_POST["testCasesOutputs"];
 $points = $_POST["points"];
 $questionConstraint = $_POST["questionConstraint"];
 
-
 //Graded Vars------------------------------------
 $correctName = false;
 $tcComments= array();
@@ -19,13 +19,7 @@ $testCaseGrade = 0;
 $hasConstraint = false;
 $hadColon = true;
 
-
-
 //----------------------------------------------
-
-
-
-
 
 $explodedInput = array();
 $explodedInput = explode(",",$testCasesInputs);
@@ -35,11 +29,9 @@ $explodedOutput = explode(",",$testCasesOutputs);
 $numInputs = (sizeof($explodedInput)/sizeof($explodedOutput)); //determines how many inputs there are for each output
 $numTestCases = sizeof($explodedOutput); //determines how many test cases there are
 
-
 $inputCounter = 0;
 $programFunctionCounter = 23;
 $programFunctionName = "";
-
 
 //Checking if the name of the written function matches what was given in the question
 while($questionDescription[$programFunctionCounter] != ' '){
@@ -81,8 +73,6 @@ while($studentAnswer[$counter] != "\n" and $counter != 100){
 $deduction = $points/$numTestCases;
 $deduction = round($deduction,2,PHP_ROUND_HALF_UP);
 
-
-
 //determine how many inputs we need to test
 $testCaseCounter = 0;
 $loopCouter = 0;
@@ -111,14 +101,11 @@ while($testCaseCounter < $numTestCases){
   $comments = "";
   $grade = $points;
   
-
   if (strval($pyOutput) == strval($outputs)){
     $correctAnswer = true;
   }
-  
-  
-  
-  
+
+//Grading deductions
   if($correctAnswer==true){
     $comments .= "Correct Output!\n";
   }
@@ -165,14 +152,10 @@ while($testCaseCounter < $numTestCases){
   $keyName = "TC$testCaseCounter"."Grade";
   $tcGrades[$keyName] = $grade;
   
-  
-  
-  
   $inputs = "";
   $loopCounter=0;
   $correctAnswer = false;
-  
-  
+
 }
 
 $row["examID"] = $examID;
@@ -181,13 +164,7 @@ $row["username"] = $username;
 $row["grade"] = $tcGrades;
 $row["comments"] = $tcComments;
  
-
-
 $json = json_encode($row);
 echo $json;
-
-
-
-
 
 ?>

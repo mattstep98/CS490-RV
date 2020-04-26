@@ -1,5 +1,5 @@
 <?php
-//Group 10 rc Middle
+//Group 10 RV Middle
 //Matthew Stepnowski
 
 //POST Variables----------------
@@ -21,16 +21,11 @@ $testCasesInputs = $_POST["testCasesInputs"];
 $testCasesOutputs = $_POST["testCasesOutputs"];
 $grade = $_POST["grade"];
 
-
-
 //Log File--------------------------------------------------------------
 $log = fopen("logFile.txt", "a") or die("Unable to open Log File");
 $logTxt = "messageType: $message_type".PHP_EOL. "\tusername: $username".PHP_EOL. "\t studentAnswer: $studentAnswer".PHP_EOL. "\texamName: $examName".PHP_EOL. "\texamID: $examID".PHP_EOL. "\texamQuestionsAndPoints: $examQuestionsAndPoints".PHP_EOL. "\tquestionID: $questionID".PHP_EOL. "\tpoints: $points".PHP_EOL. "\tquestionLevel: $questionLevel".PHP_EOL. "\tquestionTopic: $questionTopic".PHP_EOL. "\tquestionDescription: $questionDescription".PHP_EOL. "\tquestionConstraint: $questionConstraint".PHP_EOL. "\tteacherComment: $teacherComment".PHP_EOL. "\ttestCasesInputs: $testCasesInputs".PHP_EOL. "\ttestCasesOutputs: $testCasesOutputs".PHP_EOL. "\tgrade: $grade".PHP_EOL.PHP_EOL;
 fwrite($log,$logTxt);
 fclose($log);
-
-
-
 
 //message_types-------------------------------------------------------
 if ($message_type == "login_request"){ //login
@@ -255,10 +250,6 @@ function list_students()
   return $res;
 }
 
-
-
-
-
 function view_results_teacher($username,$examID)
 {
  	$data = array('examID' => $examID, 'username' => $username);
@@ -285,9 +276,6 @@ function view_results_student($username,$examID)
   return $res;
 }
 
-
-
-
 function get_questions()
 {
  	$data = array();
@@ -300,7 +288,6 @@ function get_questions()
   curl_close ($curl);
   return $res;
 }
-
 
 function release_scores($examID)
 {
@@ -315,7 +302,6 @@ function release_scores($examID)
   return $res;
 }
 
-
 function autoGrade($examID, $questionID,$questionDescription, $username, $studentAnswer, $questionConstraint, $testCasesInputs, $testCasesOutputs, $points)
 {
   $data = array('examID' => $examID, 'questionID' => $questionID,'questionDescription' => $questionDescription, 'username' => $username, 'studentAnswer' => $studentAnswer, 'questionConstraint' => $questionConstraint, 'testCasesInputs' => $testCasesInputs, 'testCasesOutputs' => $testCasesOutputs, 'points' => $points);
@@ -328,48 +314,5 @@ function autoGrade($examID, $questionID,$questionDescription, $username, $studen
   curl_close ($curl);
   return $res;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ?>

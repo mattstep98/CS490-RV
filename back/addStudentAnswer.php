@@ -1,4 +1,5 @@
 <?php
+//addStudentAnswer.php, Matthew Stepnowski
 include "db.php";
 $examID = $_POST['examID'];
 $questionID = $_POST['questionID'];
@@ -19,11 +20,9 @@ echo "New answer Added!";
 echo "Error: " . $result . "<br>" . mysqli_error($connection);
 }
 
-
 $testCasesInputs = mysqli_query($connection, "SELECT testCasesInputs FROM CS490_questions WHERE questionID = '$questionID'");
 $testCasesInputs = mysqli_fetch_assoc($testCasesInputs);
 $testCasesInputs=$testCasesInputs["testCasesInputs"];
-
 
 $testCasesOutputs = mysqli_query($connection, "SELECT testCasesOutputs FROM CS490_questions WHERE questionID = '$questionID'");
 $testCasesOutputs = mysqli_fetch_assoc($testCasesOutputs);
@@ -54,13 +53,9 @@ function triggerAutograde($examID, $questionID,$questionDescription, $username, 
   curl_close ($curl);
   return $res;
 }
-
 $result = triggerAutograde($examID, $questionID,$questionDescription, $username, $studentAnswer, $questionConstraint, $testCasesInputs, $testCasesOutputs, $points);
 
-
-
 //Inserting info into database
-
 $result= json_decode($result);
 
 $examID = $result->examID;
@@ -71,50 +66,13 @@ $grade = json_encode($grade);
 $comments = $result->comments;
 $comments = json_encode($comments);
 
-
 $result = mysqli_query($connection, "UPDATE `CS490_studentGrading` SET `grade`='$grade',`comments`='$comments' WHERE examID='$examID' and questionID='$questionID' and username='$username'");
-// Pass back the string !!! if we failed to add a new question
+//result from database for adding the students grades
 if ($result) {
 echo "Successfully graded";
 } else {
 echo "Error: " . $result . "<br>" . mysqli_error($connection);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 mysqli_close($conn);
 ?>
