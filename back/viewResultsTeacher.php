@@ -4,6 +4,7 @@ include "db.php";
 $username = $_POST['username'];
 $examID = $_POST['examID'];
 
+
 $result = mysqli_query($connection, "SELECT CS490_questions.description, CS490_questions.questionContraint, CS490_studentGrading.grade, CS490_studentGrading.comments,
   CS490_studentGrading.studentAnswer FROM CS490_studentGrading INNER JOIN CS490_questions ON CS490_studentGrading.questionID=CS490_questions.questionID WHERE username = '$username' and examID = '$examID'");
 if (mysqli_num_rows($result) > 0){
@@ -12,7 +13,7 @@ if (mysqli_num_rows($result) > 0){
     $json[] = $row;
   }
 }else{
-  $json = array("message" => "-1");
+  $json = array("message_type" => "error");
 }
 echo json_encode($json);
 

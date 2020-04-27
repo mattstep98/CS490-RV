@@ -11,9 +11,11 @@ $result = mysqli_query($connection, "UPDATE CS490_studentGrading SET grade='$gra
 
 // Pass back the string !!! if we failed to add a new question
 if ($result){
-  echo "Successfully Updated";
+  $json = array("message_type" => "success");
+  echo json_encode($json);
 }else{
-  echo "Error: " . $result . "<br>" . mysqli_error($connection);
+  $json = array("message_type" => "error");
+  echo json_encode($json);
 }
 mysqli_close($conn);
 ?>

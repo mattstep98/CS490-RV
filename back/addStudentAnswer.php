@@ -6,19 +6,9 @@ $questionID = $_POST['questionID'];
 $username = $_POST['username'];
 $studentAnswer = $_POST['studentAnswer'];
 $json = array();
-$gradeArr = array(); 
-$commentArr = array();
 
+//Pass back the string !!! if we failed to add a new question
 
-
-$result = mysqli_query($connection, "INSERT INTO CS490_studentGrading(examID, questionID, username, studentAnswer) VALUES ('$examID','$questionID','$username','$studentAnswer')");
-
-// Pass back the string !!! if we failed to add a new question
-if ($result) {
-echo "New answer Added!";
-} else {
-echo "Error: " . $result . "<br>" . mysqli_error($connection);
-}
 
 $testCasesInputs = mysqli_query($connection, "SELECT testCasesInputs FROM CS490_questions WHERE questionID = '$questionID'");
 $testCasesInputs = mysqli_fetch_assoc($testCasesInputs);
@@ -63,13 +53,13 @@ $questionID = $result->questionID;
 $username = $result->username;
 $grade = $result->grade;
 $grade = json_encode($grade);
-$comments = $result->comments;
-$comments = json_encode($comments);
 
-$result = mysqli_query($connection, "UPDATE `CS490_studentGrading` SET `grade`='$grade',`comments`='$comments' WHERE examID='$examID' and questionID='$questionID' and username='$username'");
+//$result = mysqli_query($connection, "UPDATE `CS490_studentGrading` SET `grade`='$grade' WHERE examID='$examID', questionID='$questionID', username='$username'");
+$result = mysqli_query($connection, "INSERT INTO `CS490_studentGrading`(`examID`, `questionID`, `username`, `studentAnswer`, `grade`) VALUES ('$examID','$questionID','$username','$studentAnswer', '$grade')");
 //result from database for adding the students grades
 if ($result) {
-echo "Successfully graded";
+  $json = array("message_type" => "success");
+  echo json_encode($json);
 } else {
 echo "Error: " . $result . "<br>" . mysqli_error($connection);
 }

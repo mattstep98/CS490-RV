@@ -9,8 +9,8 @@ if (mysqli_num_rows($result) > 0) {
     $json[] = $row;
   }
 }else{
-  //Return -1 if there are no questions
-  $json = array("QuestionID" => "-1");
+  //Return error if there are no questions
+  $json = array("message_type" => "error");
 }
 echo json_encode($json);
 

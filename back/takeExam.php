@@ -16,7 +16,7 @@ if (mysqli_num_rows($result) > 0){
     $json[] = $row;
   }
 }else{
-  $json = array("message_type" => "-1");
+  $json = array("message_type" => "error");
 }
 echo json_encode($json);
 mysqli_close($connection);

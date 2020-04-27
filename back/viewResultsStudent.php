@@ -17,11 +17,11 @@ if ($shouldWeRelease == 1){
       $json[] = $row;
     }
   }else{
-   $json = array("message" => "-1");
+   $json = array("message_type" => "error");
   }
   echo json_encode($json);
 }else{
-  $json = array("message" => "Not Permitted To View Grades");
+  $json = array("message_type" => "Not Permitted To View Grades");
   echo json_encode($json);
 }
 

@@ -11,7 +11,7 @@ if (mysqli_num_rows($result) > 0){
   }
 }
 else{
- $json = array("examID" => "-1");
+ $json = array("message_type" => "error");
 }
 echo json_encode($json);
 mysqli_close($connection);

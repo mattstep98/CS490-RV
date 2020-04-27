@@ -8,7 +8,8 @@ $examID = (int)$examID;
 $result = mysqli_query($connection, "UPDATE CS490_studentGrading SET releaseGrades = 1 WHERE examID = '$examID'");
 
 if ($result){
-  echo "Successfully Updated";
+  $json = array("message_type" => "success");
+  echo json_encode($json);
 } 
 else{
   echo "Error: " . $result . "<br>" . mysqli_error($connection);
