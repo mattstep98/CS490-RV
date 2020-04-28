@@ -1,5 +1,5 @@
 <?php
-//Group 10 RV Middle
+//Group 10 RC Middle
 //Matthew Stepnowski
 
 //POST Variables----------------
@@ -16,14 +16,14 @@ $questionLevel = $_POST["questionLevel"];
 $questionTopic = $_POST["questionTopic"];
 $questionConstraint = $_POST["questionConstraint"];
 $questionDescription = $_POST["questionDescription"];
-$teacherComment = $_POST["teacherComment"];
+$comments = $_POST["comments"];
 $testCasesInputs = $_POST["testCasesInputs"];
 $testCasesOutputs = $_POST["testCasesOutputs"];
 $grade = $_POST["grade"];
 
 //Log File--------------------------------------------------------------
 $log = fopen("logFile.txt", "a") or die("Unable to open Log File");
-$logTxt = "messageType: $message_type".PHP_EOL. "\tusername: $username".PHP_EOL. "\t studentAnswer: $studentAnswer".PHP_EOL. "\texamName: $examName".PHP_EOL. "\texamID: $examID".PHP_EOL. "\texamQuestionsAndPoints: $examQuestionsAndPoints".PHP_EOL. "\tquestionID: $questionID".PHP_EOL. "\tpoints: $points".PHP_EOL. "\tquestionLevel: $questionLevel".PHP_EOL. "\tquestionTopic: $questionTopic".PHP_EOL. "\tquestionDescription: $questionDescription".PHP_EOL. "\tquestionConstraint: $questionConstraint".PHP_EOL. "\tteacherComment: $teacherComment".PHP_EOL. "\ttestCasesInputs: $testCasesInputs".PHP_EOL. "\ttestCasesOutputs: $testCasesOutputs".PHP_EOL. "\tgrade: $grade".PHP_EOL.PHP_EOL;
+$logTxt = "messageType: $message_type".PHP_EOL. "\tusername: $username".PHP_EOL. "\tstudentAnswer: $studentAnswer".PHP_EOL. "\texamName: $examName".PHP_EOL. "\texamID: $examID".PHP_EOL. "\texamQuestionsAndPoints: $examQuestionsAndPoints".PHP_EOL. "\tquestionID: $questionID".PHP_EOL. "\tpoints: $points".PHP_EOL. "\tquestionLevel: $questionLevel".PHP_EOL. "\tquestionTopic: $questionTopic".PHP_EOL. "\tquestionDescription: $questionDescription".PHP_EOL. "\tquestionConstraint: $questionConstraint".PHP_EOL. "\tcomments: $comments".PHP_EOL. "\ttestCasesInputs: $testCasesInputs".PHP_EOL. "\ttestCasesOutputs: $testCasesOutputs".PHP_EOL. "\tgrade: $grade".PHP_EOL.PHP_EOL;
 fwrite($log,$logTxt);
 fclose($log);
 
@@ -31,12 +31,7 @@ fclose($log);
 if ($message_type == "login_request"){ //login
   $res_login=login_backEnd($username,$password);
   echo $res_login;
-}  
-elseif ($message_type == "run_code"){ //runs python code
-  $res_run=run($questionID,$username,$examID); //returns the 3 cases in string format (0 is wrong, 1 is correct)
-  $res_process=process_score($res_run,$points);  //returns how many points the student will get for the question
-  $res_send_results_to_back=send_results_to_back($questionID,$examID,$username,$res_process); //sends the grade to the back
-  echo $res_send_results_to_back;
+  
 }
 elseif ($message_type == "create_exam"){ //requests to add an exam to the database
    $res_create_exam=create_exam($examName, $examQuestionsAndPoints); //adds the exam to the database
@@ -51,19 +46,19 @@ elseif ($message_type == "list_exams"){ //lists all exams in the database
    $res_list_exams = list_exams();
    echo $res_list_exams;
 }
-elseif ($message_type == "view_results_teacher"){ //views results from back
+elseif ($message_type == "view_results_teacher"){ //views results from back for teacher access
    $res_view_results_teacher = view_results_teacher($username,$examID);
    echo $res_view_results_teacher;
 }
-elseif ($message_type == "view_results_student"){ //views results from back
+elseif ($message_type == "view_results_student"){ //views results from back for student access
    $res_results_student = view_results_student($username,$examID);
    echo $res_results_student;
 }
-elseif ($message_type == "take_exam"){ //
+elseif ($message_type == "take_exam"){ //Returns exam information
    $res_take_exam = take_exam($examID);
    echo $res_take_exam;
 }
-elseif ($message_type == "add_student_answer"){ //adds the students answer to the database
+elseif ($message_type == "add_student_answer"){ //adds the students answer to the database and triggers autograding
    $res_add_student_answer = add_student_answer($examID, $questionID, $username, $studentAnswer);
    echo $res_add_student_answer;
 }
@@ -79,28 +74,28 @@ elseif ($message_type == "create_question"){ //adds a question to the database
    $res_create_question=create_question($questionDescription, $questionTopic, $questionLevel, $questionConstraint, $testCasesInputs, $testCasesOutputs);
    echo $res_create_question;
 }
-elseif ($message_type == "release_scores"){ //releases scores
+elseif ($message_type == "release_scores"){ //releases scores for students given an exam
    $res_release_scores=release_scores($examID);
    echo $res_release_scores;
-}
-elseif ($message_type == "filter_question"){ //releases scores
-   $res_filter_question=filter_question($topic,$level);
-   echo $res_filter_question;
 }
 elseif ($message_type == "auto_grade"){ //trigger the autograding
   $res_auto_grade=autoGrade($examID, $questionID,$questionDescription, $username, $studentAnswer, $questionConstraint, $testCasesInputs, $testCasesOutputs, $points);
   echo $res_auto_grade;
 }  
-elseif ($message_type == "list_students_that_took_exam"){ //trigger the autograding
+elseif ($message_type == "list_students_that_took_exam"){ //lists the students who took a certain exam
   $res_list_students_that_took_exam=list_students_that_took_exam($examID);
   echo $res_list_students_that_took_exam;
 }  
-elseif ($message_type == "list_students"){ //trigger the autograding
+elseif ($message_type == "list_students"){ //lists all the students
   $res_list_students=list_students();
   echo $res_list_students;
 }  
+elseif ($message_type == "student_overview"){ //Allow a student to see the grades that are released
+  $res_student_overview=student_overview($username);
+  echo $res_student_overview;
+}  
 else{
-  echo '{"message_type": "error"}';
+  echo '{"message_type": "error"}'; //display an error if message_type is not familiar
 }
 
 //functions----------------------------------------------------------------------------------------------------
@@ -112,7 +107,7 @@ function login_backEnd($username,$password)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -125,7 +120,7 @@ function create_exam($examName, $examQuestionsAndPoints)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -138,7 +133,7 @@ function create_question($questionDescription, $questionTopic, $questionLevel, $
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -151,22 +146,7 @@ function select_question($questionID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
-  curl_close ($curl);
-  return $res;
-}
-
-
-
-function filter_question($topic,$level)
-{
- 	$data = array('topic' => $topic, 'level' => $level);
- 	$url = "https://web.njit.edu/~mjs239/CS490/database/filterQuestions.php";
- 	$curl = curl_init();
- 	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-  curl_setopt($curl, CURLOPT_URL, $url);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -179,7 +159,7 @@ function list_exams()
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -192,11 +172,10 @@ function take_exam($examID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
-
 
 function add_student_answer($examID, $questionID, $username, $studentAnswer)
 {
@@ -206,20 +185,20 @@ function add_student_answer($examID, $questionID, $username, $studentAnswer)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
 
-function teacher_override($examID,$questionID,$username,$grade,$teacherComment)
+function teacher_override($examID,$questionID,$username,$grade,$comments)
 {
- 	$data = array('examID' => $examID, 'questionID' => $questionID,'username' => $username,'grade' => $grade,'teacherComment' => $teacherComment);
+ 	$data = array('examID' => $examID, 'questionID' => $questionID,'username' => $username,'grade' => $grade,'comments' => $comments);
  	$url = "https://web.njit.edu/~mjs239/CS490/database/teacherOverride.php";
  	$curl = curl_init();
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -232,7 +211,7 @@ function list_students_that_took_exam($examID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -245,7 +224,7 @@ function list_students()
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -258,7 +237,7 @@ function view_results_teacher($username,$examID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -271,7 +250,7 @@ function view_results_student($username,$examID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -284,7 +263,7 @@ function get_questions()
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -297,7 +276,7 @@ function release_scores($examID)
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
@@ -310,9 +289,21 @@ function autoGrade($examID, $questionID,$questionDescription, $username, $studen
  	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
- 	$res = curl_exec($curl); //Recieve the encoded JSON response from the backend
+ 	$res = curl_exec($curl); 
   curl_close ($curl);
   return $res;
 }
 
+function student_overview($username)
+{
+  $data = array('username' => $username);
+ 	$url = "https://web.njit.edu/~mjs239/CS490/database/studentOverview.php";
+ 	$curl = curl_init();
+ 	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+ 	$res = curl_exec($curl); 
+  curl_close ($curl);
+  return $res;
+}
 ?>

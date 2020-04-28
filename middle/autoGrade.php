@@ -10,6 +10,7 @@ $testCasesOutputs = $_POST["testCasesOutputs"];
 $points = $_POST["points"];
 $questionConstraint = $_POST["questionConstraint"];
 
+
 //Graded Vars------------------------------------
 $correctName = false;
 $tcComments= array();
@@ -18,6 +19,7 @@ $comments = "";
 $testCaseGrade = 0;
 $hasConstraint = false;
 $hadColon = true;
+$correctAnswer = false;
 
 //----------------------------------------------
 
@@ -41,7 +43,7 @@ while($questionDescription[$programFunctionCounter] != ' '){
 
 $programFunctionCounter = 4;
 $studentFunctionName = "";
-while (($studentAnswer[$programFunctionCounter] != "(") && ($studentAnswer[$programFunctionCounter] != " ")) //goes through function name starting after "def " and ending when it hits a " " or {
+while (($studentAnswer[$programFunctionCounter] != "(") && ($studentAnswer[$programFunctionCounter] != " ")) //goes through function name starting after "def " and ending when it hits a " " or (
 {
   $studentFunctionName = $studentFunctionName .= $studentAnswer[$programFunctionCounter];
   $programFunctionCounter++;
@@ -53,14 +55,16 @@ if ($studentFunctionName == $programFunctionName)
 }
 
 //Checking if the studentAnswer has the constraint in it
-
-if(strpos($studentAnswer, $questionConstraint) != false){
+if((empty($questionConstraint)) or (strpos($studentAnswer, $questionConstraint) !== false)){
   $hasConstraint = true;
+}else{
+  $hasConstraint = false;
 }
 
 //Checking if the student remembered to put a colon
 $counter = 0;
-while($studentAnswer[$counter] != "\n" and $counter != 100){
+
+while($studentAnswer[$counter] != "\n" and $counter < 100){
   if ($studentAnswer[$counter] == ")" and $studentAnswer[$counter+1]=="\n"){
     $studentAnswer = substr_replace($studentAnswer, ':', $counter+1,0);
     $hadColon = false;
@@ -69,17 +73,13 @@ while($studentAnswer[$counter] != "\n" and $counter != 100){
   $counter++;
 }
 
-//determines how much to deduct per incorrect test case test
-$deduction = $points/$numTestCases;
-$deduction = round($deduction,2,PHP_ROUND_HALF_UP);
-
 //determine how many inputs we need to test
 $testCaseCounter = 0;
 $loopCouter = 0;
 $inputCounter=0;
 $inputs="";
 $outputs="";
-$correctAnswer = false;
+$overallGrade = 0;
 
 while($testCaseCounter < $numTestCases){
   for($loopCounter=0;$loopCounter<$numInputs;$loopCounter++){
@@ -99,50 +99,59 @@ while($testCaseCounter < $numTestCases){
   $pyOutput = shell_exec('python ./pyCode.py');
   $pyOutput = substr($pyOutput,0,-1);
   $comments = "";
-  $grade = $points;
-  
-  if (strval($pyOutput) == strval($outputs)){
+  $correctAnswer = false;
+  if (strcmp($pyOutput,$outputs)==0){
     $correctAnswer = true;
   }
-
-//Grading deductions
+  
+//Grade results to put in array  
+  $finalCorrectOutput = "";
+  $finalCorrectName = "";
+  $finalHadColon = "";
+  $finalhadConstraint = "";
+  $percentage = 1;
+  
+//Grading decisions
   if($correctAnswer==true){
-    $comments .= "Correct Output!\n";
+    $finalCorrectOutput = "true";
   }
   else{
-    $comments .= "Wrong Output\n";
-    $grade = $grade - $deduction;
+    $finalCorrectOutput = "false";
+    $percentage -=0.25;
   }
   if($correctName==true){
-    $comments .= "You put the correct Function Name\n";
+    $finalCorrectName = "true";
   }
   else{
-    $comments .= "You put the wrong Function Name\n";
-    $grade = $grade - $deduction;
+    $finalCorrectName = "false";
+    $percentage -=0.25;
   }
-  
   if($hadColon==true){
-    $comments .= "You remembered your colon\n";
+    $finalHadColon = "true";
   }
   else{
-    $comments .= "You forgot your colon\n";
-    $grade = $grade - $deduction;
+    $finalHadColon = "false";
+    $percentage -=0.25;
   }
-  
   if($hasConstraint==true){
-    $comments .= "You used the correct restraint\n";
+    $finalHadConstraint = "true";
   }
   else{
-    $comments .= "You did not use the correct restraint\n";
-    $grade = $grade - $deduction;
+    $finalHadConstraint = "false";
+    $percentage -=0.25;
   }
   
-  if($grade > $points){
-    $grade = $points;
-  }
-  elseif($grade > $points-2){
-    $grade = $points;
-  }
+  $grade = $percentage*($points/($numTestCases));
+  $tcTotalGrade = $points/($numTestCases);
+  $overallGrade += $grade;
+  
+  $finalGrading = array();
+  $finalGrading["correctOutput"] = $finalCorrectOutput;
+  $finalGrading["correctName"] = $finalCorrectName;
+  $finalGrading["hadColon"] = $finalHadColon;
+  $finalGrading["hadConstraint"] = $finalHadConstraint;
+  $finalGrading["points"] = $grade;
+  $finalGrading["totalPoints"] = $tcTotalGrade; 
   
   $testCaseCounter++;
   $keyName = ($testCaseCounter);
@@ -150,21 +159,27 @@ while($testCaseCounter < $numTestCases){
   $tcComments[$keyName] = $comments;
   
   $keyName = "TC$testCaseCounter"."Grade";
-  $tcGrades[$keyName] = $grade;
+  $tcGrades[$keyName] = $finalGrading;
   
   $inputs = "";
   $loopCounter=0;
   $correctAnswer = false;
-
 }
+
+$tcGrades["totalPoints"] = $points;  
 
 $row["examID"] = $examID;
 $row["questionID"] = $questionID;
 $row["username"] = $username;
 $row["grade"] = $tcGrades;
-$row["comments"] = $tcComments;
- 
+$row["overallGrade"] = $overallGrade; 
+
 $json = json_encode($row);
-echo $json;
+echo ($json);
+
+$log = fopen("../rc/logFile.txt", "a") or die("Unable to open Log File"); //writes information to the log
+$logTxt = "GRADING RESULT: ".$json.PHP_EOL.PHP_EOL;
+fwrite($log,$logTxt);
+fclose($log);
 
 ?>

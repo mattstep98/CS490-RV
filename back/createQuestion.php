@@ -14,7 +14,6 @@ $compareFormat = "Write a function named ";
 if($format == $compareFormat)
 {
   $result = mysqli_query($connection, "INSERT INTO `CS490_questions`(`description`, `questionConstraint`, `topic`, `level`, `testCasesInputs`, `testCasesOutputs`) VALUES ('$questionDescription', '$questionConstraint', '$questionTopic','$questionLevel','$testCasesInputs','$testCasesOutputs')");
-  
   if ($result){
     $json = array("message_type" => "success");
     echo json_encode($json);

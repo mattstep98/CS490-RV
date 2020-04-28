@@ -7,9 +7,7 @@ $username = $_POST['username'];
 $studentAnswer = $_POST['studentAnswer'];
 $json = array();
 
-//Pass back the string !!! if we failed to add a new question
-
-
+//Recieving necessary inputs for the autograding process
 $testCasesInputs = mysqli_query($connection, "SELECT testCasesInputs FROM CS490_questions WHERE questionID = '$questionID'");
 $testCasesInputs = mysqli_fetch_assoc($testCasesInputs);
 $testCasesInputs=$testCasesInputs["testCasesInputs"];
@@ -53,16 +51,22 @@ $questionID = $result->questionID;
 $username = $result->username;
 $grade = $result->grade;
 $grade = json_encode($grade);
+$overallGrade = $result->overallGrade;
 
-//$result = mysqli_query($connection, "UPDATE `CS490_studentGrading` SET `grade`='$grade' WHERE examID='$examID', questionID='$questionID', username='$username'");
-$result = mysqli_query($connection, "INSERT INTO `CS490_studentGrading`(`examID`, `questionID`, `username`, `studentAnswer`, `grade`) VALUES ('$examID','$questionID','$username','$studentAnswer', '$grade')");
+$result1 = mysqli_query($connection, "INSERT INTO `CS490_studentGrading`(`examID`, `questionID`, `username`, `studentAnswer`, `grade`, `overallGrade`) VALUES ('$examID','$questionID','$username','$studentAnswer', '$grade', '$overallGrade')");
 //result from database for adding the students grades
-if ($result) {
+if ($result1) {
   $json = array("message_type" => "success");
   echo json_encode($json);
 } else {
-echo "Error: " . $result . "<br>" . mysqli_error($connection);
+$json = "Error: " . $result1 . "<br>" . mysqli_error($connection);
 }
+
+$log = fopen("../rc/logFile.txt", "a") or die("Unable to open Log File"); //Log the result
+$logTxt = "DATABASE RESULT ".$json.PHP_EOL.PHP_EOL;
+fwrite($log,$logTxt);
+fclose($log);
+
 
 mysqli_close($conn);
 ?>
