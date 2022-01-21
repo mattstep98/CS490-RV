@@ -1,6 +1,6 @@
 # NJIT CS490 Final Project
 
-Final Project for my senior Software Development and Design class at NJIT>
+Final Project for my senior Software Development and Design class at NJIT
 
 The project goal was to create a Introductory Computer Science test taking website.
 There would be a student and teacher log in. 
