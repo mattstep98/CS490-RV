@@ -1,4 +1,4 @@
-#NJIT CS490 Final Project
+# NJIT CS490 Final Project
 
 Final Project for my senior Software Development and Design class at NJIT>
 
